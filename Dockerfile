@@ -1,4 +1,4 @@
-FROM node:20.16.0-bookworm-slim AS base
+FROM node:current-bookworm-slim AS base
 WORKDIR /app
 
 RUN npm install -g pnpm
