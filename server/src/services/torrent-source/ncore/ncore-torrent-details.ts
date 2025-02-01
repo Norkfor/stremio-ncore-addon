@@ -51,8 +51,8 @@ export class NcoreTorrentDetails extends TorrentDetails {
     return this.release_name;
   }
 
-  public getSeed(): string {
-    return this.seeders;
+  public getSeed(): number {
+  return parseInt(this.seeders);
   }
 
   public getLanguage(): Language {
