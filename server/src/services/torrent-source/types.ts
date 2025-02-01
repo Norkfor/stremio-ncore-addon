@@ -41,6 +41,7 @@ export abstract class TorrentDetails implements ParsedTorrentDetails {
    */
   abstract displayResolution(resolution: Resolution): string;
   abstract getLanguage(): Language;
+  abstract getSeed(): string;
   /**
    * Returns the name of the torrent. Usually the release name of the torrent.
    */

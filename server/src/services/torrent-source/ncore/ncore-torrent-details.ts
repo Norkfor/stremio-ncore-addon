@@ -25,6 +25,7 @@ export class NcoreTorrentDetails extends TorrentDetails {
 
   private category: TorrentCategory;
   private release_name: string;
+  private seeders: string;
 
   constructor(ncoreTorrent: NcoreTorrent, parsedDetails: ParsedTorrentDetails) {
     super();
@@ -39,6 +40,7 @@ export class NcoreTorrentDetails extends TorrentDetails {
       : Resolution.R720P;
     this.category = ncoreTorrent.category;
     this.release_name = ncoreTorrent.release_name;
+    this.seeders = ncoreTorrent.seeders;
   }
 
   public displayResolution(resolution: Resolution): string {
@@ -47,6 +49,10 @@ export class NcoreTorrentDetails extends TorrentDetails {
 
   public getName(): string {
     return this.release_name;
+  }
+
+  public getSeed(): string {
+    return this.seeders;
   }
 
   public getLanguage(): Language {

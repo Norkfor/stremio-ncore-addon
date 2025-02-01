@@ -66,7 +66,7 @@ export class StreamService {
     const warningLine = torrent.isSpeculated
       ? `⚠️ <strong>Speculated</strong> ⚠️\nThis might be a different ${mediaType}!\n`
       : '';
-    const typeLine = `${languageEmoji} | ${torrent.displayResolution(torrent.getResolution(file.name))} | ${fileSizeString}\n`;
+    const typeLine = `${languageEmoji} | ${torrent.getSeed} | ${torrent.displayResolution(torrent.getResolution(file.name))} | ${fileSizeString}\n`;
     return warningLine + recommendedLine + typeLine + torrent.getName();
   }
 
