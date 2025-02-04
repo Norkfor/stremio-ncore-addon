@@ -4,21 +4,29 @@
     "skipLibCheck": true,
     "target": "ES2022",
     "strict": true,
-
     "module": "ESNext",
     "moduleResolution": "node",
     "isolatedModules": true,
     "moduleDetection": "force",
     "esModuleInterop": true,
     "composite": true,
-
     "outDir": "../dist/server",
-    "lib": ["ES2022"],
+    "lib": ["ES2022", "DOM"],
     "rootDir": "src",
     "baseUrl": "./",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "types": ["node"],
+    "typeRoots": ["node_modules/@types"],
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "forceConsistentCasingInFileNames": true,
+    "emitDecoratorMetadata": true
   },
   "tsc-alias": {
     "resolveFullPaths": true

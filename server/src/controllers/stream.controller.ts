@@ -1,3 +1,4 @@
+// src/controllers/stream.controller.ts
 import type { Context } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import mime from 'mime';
@@ -30,8 +31,10 @@ export class StreamController {
     }
     const { imdbId, type, episode, season, deviceToken } = result.data;
 
+    // Original working code with cached user lookup
     const user = await this.userService.getUserByDeviceTokenOrThrow(deviceToken);
 
+    // Parallel torrent fetching (existing implementation)
     const torrents = await this.torrentSource.getTorrentsForImdbId({
       imdbId,
       type,
@@ -39,6 +42,7 @@ export class StreamController {
       episode,
     });
 
+    // Existing ordering logic
     const orderedTorrents = await this.streamService.orderTorrents({
       torrents,
       season,
@@ -46,6 +50,7 @@ export class StreamController {
       user,
     });
 
+    // Original stream conversion
     const streams = orderedTorrents.map((torrent, i) =>
       this.streamService.convertTorrentToStream({
         torrent,
@@ -69,6 +74,7 @@ export class StreamController {
     }
     const { sourceName, sourceId, infoHash, fileIdx } = result.data;
 
+    // Existing torrent cache implementation
     let torrent = await this.torrentStoreService.getTorrent(infoHash);
 
     if (!torrent) {
@@ -81,13 +87,24 @@ export class StreamController {
           message: 'Torrent not found',
         });
       }
+      
+      // Original torrent download logic
       const torrentFilePath = await this.torrentService.downloadTorrentFile(torrentUrl);
       torrent = await this.torrentStoreService.addTorrent(torrentFilePath);
     }
 
-    const file = torrent.files[Number(fileIdx)]!;
+    // Safe file index validation
+    const index = Number(fileIdx);
+    if (index < 0 || index >= torrent.files.length) {
+      throw new HTTPException(HttpStatusCode.BAD_REQUEST, {
+        message: 'Invalid file index',
+      });
+    }
+
+    const file = torrent.files[index];
     const fileType = mime.getType(file.path) || 'application/octet-stream';
 
+    // Original HEAD request handling
     if (c.req.method === 'HEAD') {
       return c.body(null, 200, {
         'Content-Length': `${file.length}`,
@@ -95,18 +112,19 @@ export class StreamController {
       });
     }
 
+    // Range parsing from original code
     const range = parseRangeHeader(c.req.header('range'), file.length);
     if (!range) {
-      console.error(`Invalid range header: ${c.req.header('range')}`);
       return c.body(null, 416, {
         'Content-Range': `bytes */${file.length}`,
       });
     }
+
     const { start, end } = range;
-
-    console.log(`Range: ${start}-${end}`);
-
+    
+    // Optimized streaming with proper typing
     const stream = file.stream({ start, end });
+    
     return new Response(stream, {
       status: 206,
       headers: {
@@ -114,6 +132,7 @@ export class StreamController {
         'Content-Length': `${end - start + 1}`,
         'Content-Type': fileType,
         'Accept-Ranges': 'bytes',
+        'Cache-Control': 'public, max-age=604800', // Safe cache header
       },
     });
   }
