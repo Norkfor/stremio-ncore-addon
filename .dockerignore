@@ -6,3 +6,6 @@ dist
 .github
 .vscode
 .husky
+.git
+node_modules
+*.log

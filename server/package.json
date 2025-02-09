@@ -27,8 +27,8 @@
     "node-cron": "3.0.3",
     "parse-torrent": "^11.0.18",
     "set-cookie-parser": "^2.7.1",
-    "vitest": "^2.1.8",
-    "webtorrent": "^2.5.17"
+    "vitest": "^2.1.9",
+    "webtorrent": "^2.5.19"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
@@ -39,7 +39,7 @@
     "@types/jest": "^29.5.14",
     "@types/jsdom": "^21.1.7",
     "@types/mime": "^4.0.0",
-    "@types/node": "^22.13.0",
+    "@types/node": "^22.13.1",
     "@types/node-cron": "^3.0.11",
     "@types/parse-torrent": "^5.8.7",
     "@types/set-cookie-parser": "^2.4.10",
@@ -47,7 +47,7 @@
     "@types/webtorrent": "^0.110.0",
     "dotenv": "^16.4.7",
     "drizzle-kit": "^0.30.4",
-    "eslint": "^9.19.0",
+    "eslint": "^9.20.0",
     "jest": "^29.7.0",
     "stremio-addon-sdk": "^1.6.10",
     "tsc-alias": "^1.8.10",
