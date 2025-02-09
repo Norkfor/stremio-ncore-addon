@@ -13,7 +13,6 @@ export class TorrentStoreService {
   constructor(private torrentSource: TorrentSourceManager) {}
 
   private torrentFilePaths = new Map<InfoHash, TorrentFilePath>();
-  // Cache download paths to avoid repetitive filesystem checks.
   private downloadPathCache = new Map<string, string>();
   private client = new WebTorrent({
     dht: false,
@@ -33,7 +32,7 @@ export class TorrentStoreService {
           console.log(`Torrent ${torrent.name} - ${torrent.infoHash} verified and added.`);
           this.torrentFilePaths.set(torrent.infoHash, torrentFilePath);
           resolve(torrent);
-        },
+        }
       );
       torrent.on('error', reject);
     });
@@ -43,7 +42,6 @@ export class TorrentStoreService {
     return this.client.get(infoHash);
   }
 
-  // Asynchronously obtain and cache the torrent download path.
   private async getTorrentDownloadPath(torrent: WebTorrent.Torrent): Promise<string | undefined> {
     const key = torrent.infoHash;
     if (this.downloadPathCache.has(key)) return this.downloadPathCache.get(key);
@@ -118,7 +116,31 @@ export class TorrentStoreService {
           await this.deleteTorrent(infoHash);
           console.log(`Successfully deleted ${torrent.name} - ${torrent.infoHash}.`);
         }
-      }),
+      })
     );
+  }
+
+  // New helper method to prioritize download for a specific file.
+  public prioritizeFileDownload(
+    torrent: WebTorrent.Torrent,
+    fileIndex: number,
+    resumeByte: number,
+    fastChunkSize: number = 2 * 1024 * 1024 // 30 MB for fast start
+  ): void {
+    if (!torrent.pieceLength || !torrent.pieces) return;
+    // Compute the file's offset by summing lengths of preceding files.
+    let fileOffset = 0;
+    for (let i = 0; i < fileIndex; i++) {
+      fileOffset += torrent.files[i].length;
+    }
+    // Absolute resume position within the torrent.
+    const absoluteStart = resumeByte + fileOffset;
+    const resumePiece = Math.floor(absoluteStart / torrent.pieceLength);
+    const chunkPieces = Math.ceil(fastChunkSize / torrent.pieceLength);
+    const endPiece = Math.min(torrent.pieces.length - 1, resumePiece + chunkPieces - 1);
+    if (typeof torrent.select === 'function') {
+      torrent.select(resumePiece, endPiece, 1);
+      console.log(`Prioritizing pieces ${resumePiece} to ${endPiece} for torrent ${torrent.infoHash}`);
+    }
   }
 }
