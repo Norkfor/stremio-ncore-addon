@@ -52,7 +52,7 @@ export class NcoreTorrentDetails extends TorrentDetails {
   }
 
   public getSeed(): number {
-  return parseInt(this.seeders);
+    return parseInt(this.seeders);
   }
 
   public getLanguage(): Language {
